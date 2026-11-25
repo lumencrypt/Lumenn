@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lumen — Portfolio</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --surface: #121722;
+      --surface-2: #1a2130;
+      --border: #232c3d;
+      --text: #e8edf6;
+      --muted: #8b97ad;
+      --accent: #2dd4bf;
+      --up: #34d399;
+      --down: #f87171;
+      --warn: #fbbf24;
+      --radius: 14px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    /* Topbar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding: 0 24px;
+      height: 64px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 9px;
+      font-weight: 700; font-size: 1.05rem;
+      color: var(--text); text-decoration: none;
+    }
+    .brand-mark {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--accent); color: #0b0e14;
+      display: grid; place-items: center;
+      font-weight: 800;
+    }
+    .nav { display: flex; gap: 4px; margin-left: auto; }
+    .nav-link {
+      padding: 7px 14px; border-radius: 8px;
+      color: var(--muted); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface-2); }
+    .nav-link.is-active { color: var(--text); background: var(--surface-2); }
+
+    /* Buttons */
+    .btn {
+      border: none; cursor: pointer;
+      padding: 9px 18px; border-radius: 9px;
+      font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      transition: filter .15s ease;
+    }
+    .btn-accent { background: var(--accent); color: #06201d; }
+    .btn-accent:hover { filter: brightness(1.1); }
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--surface-2); }
+
+    /* Layout */
+    .shell {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Summary */
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .summary-label {
+      font-size: 0.8rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .summary-total {
+      font-size: 2.6rem; font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 6px 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+    .summary-change { font-size: 0.9rem; font-weight: 600; }
+    .summary-change.is-up { color: var(--up); }
+    .summary-change.is-down { color: var(--down); }
+
+    /* Allocation bar */
+    .alloc-bar {
+      display: flex; gap: 3px;
+      height: 8px; margin-top: 22px;
+      border-radius: 99px; overflow: hidden;
+    }
+    .alloc-seg { flex-basis: 0; flex-shrink: 1; height: 100%; }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 24px 16px;
+      scroll-margin-top: 80px;
+    }
+    .card-title {
+      font-size: 0.95rem; font-weight: 600;
+      padding: 16px 0 8px;
+    }
+
+    /* Table */
+    .table { width: 100%; border-collapse: collapse; }
+    .table th {
+      text-align: left;
+      font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .06em;
+      color: var(--muted);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .table td {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .table tr:last-child td { border-bottom: none; }
+    .table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .asset { display: flex; align-items: center; gap: 11px; }
+    .asset-dot {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 0.7rem; font-weight: 700;
+      color: #06201d;
+    }
+    .asset-name { font-weight: 600; }
+    .asset-symbol { font-size: 0.78rem; color: var(--muted); }
+
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+
+    /* Activity list */
+    .txn-list { list-style: none; }
+    .txn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .txn:last-child { border-bottom: none; }
+    .txn-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 0.95rem;
+      background: var(--surface-2);
+      color: var(--muted);
+    }
+    .txn-icon.is-in  { color: var(--up); }
+    .txn-icon.is-out { color: var(--down); }
+    .txn-main { flex: 1; min-width: 0; }
+    .txn-title {
+      font-size: 0.92rem; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .txn-sub {
+      font-size: 0.78rem; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .txn-right { text-align: right; flex-shrink: 0; }
+    .txn-amt {
+      font-size: 0.92rem; font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .txn-amt.is-in  { color: var(--up); }
+    .txn-amt.is-out { color: var(--down); }
+    .txn-usd {
+      font-size: 0.78rem; color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Status badge */
+    .badge {
+      font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
+      padding: 2px 7px; border-radius: 99px;
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--warn);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(5, 8, 13, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; visibility: hidden;
+      transition: opacity .2s ease, visibility .2s ease;
+      z-index: 100;
+    }
+    .modal-overlay.is-open { opacity: 1; visibility: visible; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%; max-width: 420px;
+      padding: 24px;
+      transform: translateY(8px) scale(.98);
+      transition: transform .2s ease;
+    }
+    .modal-overlay.is-open .modal { transform: none; }
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .modal-title { font-size: 1.05rem; font-weight: 700; }
+    .modal-close {
+      background: transparent; border: none; color: var(--muted);
+      font-size: 1.1rem; cursor: pointer;
+      padding: 4px 9px; border-radius: 8px;
+    }
+    .modal-close:hover { color: var(--text); background: var(--surface-2); }
+
+    .field { margin-bottom: 16px; }
+    .field-label {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 0.74rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: 7px;
+    }
+    .field-input {
+      width: 100%; padding: 11px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit; font-size: 0.95rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .field-input:focus { outline: none; border-color: var(--accent); }
+    .field-row { display: flex; gap: 8px; }
+    .field-row .field-input { flex: 1; }
+    .max-btn {
+      background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--accent); font-weight: 700; font-size: 0.74rem;
+      padding: 0 14px; border-radius: 10px; cursor: pointer;
+      text-transform: uppercase; letter-spacing: .04em;
+      font-family: inherit;
+    }
+    .max-btn:hover { filter: brightness(1.15); }
+    .form-error {
+      font-size: 0.8rem; font-weight: 600; color: var(--down);
+      min-height: 18px; margin-bottom: 12px;
+    }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translate(-50%, 20px);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--up);
+      color: var(--text);
+      padding: 12px 18px; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+      opacity: 0; visibility: hidden;
+      transition: opacity .25s ease, transform .25s ease, visibility .25s ease;
+      z-index: 200;
+    }
+    .toast.is-visible { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+    .toast.is-error { border-left-color: var(--down); }
+
+    @media (max-width: 640px) {
+      .table th:nth-child(2),
+      .table td:nth-child(2),
+      .table th:nth-child(3),
+      .table td:nth-child(3) { display: none; }
+      .summary-total { font-size: 2rem; }
+      .txn-sub { max-width: 130px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">L</span> Lumen</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#portfolio" class="nav-link is-active">Portfolio</a>
+      <a href="#activity" class="nav-link">Activity</a>
+    </nav>
+    <button class="btn btn-accent" id="send-btn" type="button">Send</button>
+  </header>
+
+  <main class="shell">
+
+    <!-- Summary -->
+    <section class="summary" id="portfolio" aria-labelledby="total-label">
+      <p class="summary-label" id="total-label">Total balance</p>
+      <p class="summary-total" id="total-value">—</p>
+      <p class="summary-change" id="total-change"></p>
+      <div class="alloc-bar" id="alloc-bar" role="img"></div>
+    </section>
+
+    <!-- Holdings -->
+    <section class="card" aria-labelledby="holdings-title">
+      <h2 class="card-title" id="holdings-title">Holdings</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Asset</th>
+            <th scope="col" class="num">Price</th>
+            <th scope="col" class="num">24h</th>
+            <th scope="col" class="num">Holdings</th>
+            <th scope="col" class="num">Value</th>
+          </tr>
+        </thead>
+        <tbody id="holdings-body"></tbody>
+      </table>
+    </section>
+
+    <!-- Activity -->
+    <section class="card" id="activity" aria-labelledby="activity-title">
+      <h2 class="card-title" id="activity-title">Recent activity</h2>
+      <ul class="txn-list" id="txn-list"></ul>
+    </section>
+
+  </main>
+
+  <!-- Send modal -->
+  <div class="modal-overlay" id="send-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="send-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="send-title">Send</h2>
+        <button class="modal-close" type="button" id="send-close" aria-label="Close">✕</button>
+      </div>
+      <form id="send-form" novalidate>
+        <div class="field">
+          <label class="field-label" for="send-asset">Asset</label>
+          <select class="field-input" id="send-asset"></select>
+        </div>
+        <div class="field">
+          <div class="field-label">
+            <label for="send-amount">Amount</label>
+            <span>Available: <span id="send-available">—</span></span>
+          </div>
+          <div class="field-row">
+            <input class="field-input" id="send-amount" type="text" inputmode="decimal"
+                   placeholder="0.00" autocomplete="off">
+            <button class="max-btn" type="button" id="send-max">Max</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="send-address">Recipient address</label>
+          <input class="field-input" id="send-address" type="text"
+                 placeholder="0x…" autocomplete="off" spellcheck="false">
+        </div>
+        <p class="form-error" id="send-error" role="alert"></p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" type="button" id="send-cancel">Cancel</button>
+          <button class="btn btn-accent" type="submit">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    // ---------------------------------------------------------------
+    // 1. STATE — the single source of truth.
+    // ---------------------------------------------------------------
+    const state = {
+      prices: {
+        BTC:  { usd: 64210.55, change24h:  2.14 },
+        ETH:  { usd:  3120.40, change24h: -0.87 },
+        SOL:  { usd:   148.22, change24h:  5.62 },
+        USDC: { usd:     1.00, change24h:  0.01 },
+      },
+      // Only ETH carries a balance. 100 ETH × $3,120.40 ≈ $312,040.
+      holdings: [
+        { symbol: 'BTC',  name: 'Bitcoin',  amount: 0 },
+        { symbol: 'ETH',  name: 'Ethereum', amount: 100 },
+        { symbol: 'SOL',  name: 'Solana',   amount: 0 },
+        { symbol: 'USDC', name: 'USD Coin', amount: 0 },
+      ],
+      // usdAtTime = what the amount was worth WHEN IT HAPPENED.
+      // Deliberately not equal to amount × today's price — proves we
+      // never recompute historical values from current quotes.
+      //
+      // The bulk of the ETH balance arrived as ONE inbound transfer:
+      // 96.46 ETH, worth $301,000.00 at the time it landed.
+      //
+      // date is kept only so derive() can sort newest-first; it is
+      // no longer displayed in the activity feed.
+      transactions: [
+        { id: 't1', type: 'received', symbol: 'ETH', amount: 96.46, usdAtTime: 301000.00, date: '2026-11-18T14:22:00Z', counterparty: '0x8f3a…c21b', status: 'confirmed' },
+        { id: 't2', type: 'swap',     symbol: 'ETH', amount: 0.5,   usdAtTime:   1652.25, date: '2026-11-14T18:40:00Z', counterparty: 'USDC → ETH',  status: 'confirmed' },
+        { id: 't3', type: 'sent',     symbol: 'ETH', amount: 0.15,  usdAtTime:    418.65, date: '2026-11-09T16:30:00Z', counterparty: '0x1f77…0c8a', status: 'pending'   },
+      ],
+    };
+
+    // ---------------------------------------------------------------
+    // 2. DERIVE — every number on the page comes from here.
+    // ---------------------------------------------------------------
+    function derive() {
+      const rows = state.holdings.map(h => {
+        const p = state.prices[h.symbol] ?? { usd: 0, change24h: 0 };
+        return { ...h, price: p.usd, change24h: p.change24h, value: h.amount * p.usd };
+      });
+
+      const total = rows.reduce((sum, r) => sum + r.value, 0);
+
+      // Weighted 24h change, derived from each holding's own change.
+      // Assumes no transfers in/out in the last 24h — good enough for a
+      // snapshot, but replace with a time-series lookup for real money.
+      const prevTotal = rows.reduce((sum, r) => {
+        const factor = 1 + r.change24h / 100;
+        return sum + (factor > 0 ? r.value / factor : r.value);
+      }, 0);
+      const totalChange24h = prevTotal > 0 ? (total / prevTotal - 1) * 100 : 0;
+
+      return {
+        total,
+        totalChange24h,
+        rows: rows
+          .map(r => ({ ...r, alloc: total > 0 ? r.value / total : 0 }))
+          .sort((a, b) => b.value - a.value),
+        transactions: [...state.transactions]
+          .sort((a, b) => new Date(b.date) - new Date(a.date)),
+      };
+    }
+
+    // ---------------------------------------------------------------
+    // 3. FORMAT — one place, one rule each.
+    // ---------------------------------------------------------------
+    const usdFmt = new Intl.NumberFormat('en-US', {
+      style: 'currency', currency: 'USD', maximumFractionDigits: 2,
+    });
+
+    // Amount formatter that doesn't crush dust to zero.
+    const fmtAmount = n => {
+      if (n === 0) return '0';
+      const digits = Math.abs(n) < 1 ? 6 : 4;
+      return n.toLocaleString('en-US', { maximumFractionDigits: digits });
+    };
+
+    // Percent formatter that never emits "-0.00%" or "+0.00%".
+    const fmtPct = n => {
+      const rounded = Math.round(n * 100) / 100;
+      if (rounded === 0) return '0.00%';
+      return `${rounded > 0 ? '+' : '−'}${Math.abs(rounded).toFixed(2)}%`;
+    };
+
+    const COLORS = { BTC: '#f7931a', ETH: '#8b9dff', SOL: '#14f195', USDC: '#2775ca' };
+    const color = sym => COLORS[sym] ?? 'var(--muted)';
+
+    // Escape any data that might one day come from an API.
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+
+    // ---------------------------------------------------------------
+    // 4. RENDER — reads state, writes DOM.
+    // ---------------------------------------------------------------
+    function render() {
+      const { total, totalChange24h, rows, transactions } = derive();
+
+      // --- Total ---
+      $('total-value').textContent = usdFmt.format(total);
+
+      const changeEl = $('total-change');
+      changeEl.textContent = `${fmtPct(totalChange24h)} today`;
+      changeEl.className = `summary-change ${totalChange24h > 0 ? 'is-up' : totalChange24h < 0 ? 'is-down' : ''}`;
+
+      // --- Allocation bar ---
+      const nonZero = rows.filter(r => r.alloc > 0);
+      const bar = $('alloc-bar');
+      bar.innerHTML = nonZero
+        .map(r => `<span class="alloc-seg" style="flex-grow:${r.alloc};background:${color(r.symbol)}"></span>`)
+        .join('');
+      bar.setAttribute(
+        'aria-label',
+        nonZero.length
+          ? 'Allocation: ' + nonZero
+              .map(r => `${r.symbol} ${Math.round(r.alloc * 100)}%`)
+              .join(', ')
+          : 'Allocation: no holdings'
+      );
+
+      // --- Holdings table ---
+      $('holdings-body').innerHTML = rows
+        .map(r => `
+          <tr>
+            <td>
+              <div class="asset">
+                <span class="asset-dot" style="background:${color(r.symbol)}">${esc(r.symbol.slice(0, 3))}</span>
+                <div>
+                  <div class="asset-name">${esc(r.name)}</div>
+                  <div class="asset-symbol">${esc(r.symbol)}</div>
+                </div>
+              </div>
+            </td>
+            <td class="num">${usdFmt.format(r.price)}</td>
+            <td class="num ${r.change24h > 0 ? 'up' : r.change24h < 0 ? 'down' : ''}">${fmtPct(r.change24h)}</td>
+            <td class="num">${fmtAmount(r.amount)} ${esc(r.symbol)}</td>
+            <td class="num">${usdFmt.format(r.value)}</td>
+          </tr>
+        `)
+        .join('');
+
+      // --- Activity list ---
+      $('txn-list').innerHTML = transactions
+        .map(t => {
+          const isSwap = t.type === 'swap';
+          const isIn   = t.type === 'received';
+          const dirCls = isSwap ? '' : isIn ? 'is-in' : 'is-out';
+          const sign   = isSwap ? '' : isIn ? '+' : '−';
+          const icon   = isSwap ? '⇄' : isIn ? '↓' : '↑';
+          const label  = isSwap ? `Swapped ${esc(t.symbol)}`
+                       : isIn   ? `Received ${esc(t.symbol)}`
+                                : `Sent ${esc(t.symbol)}`;
+
+          return `
+            <li class="txn">
+              <span class="txn-icon ${dirCls}" aria-hidden="true">${icon}</span>
+              <div class="txn-main">
+                <div class="txn-title">
+                  ${label}
+                  ${t.status === 'pending' ? '<span class="badge">Pending</span>' : ''}
+                </div>
+                <div class="txn-sub">${esc(t.counterparty)}</div>
+              </div>
+              <div class="txn-right">
+                <div class="txn-amt ${dirCls}">${sign}${fmtAmount(t.amount)} ${esc(t.symbol)}</div>
+                <div class="txn-usd">${usdFmt.format(t.usdAtTime)}</div>
+              </div>
+            </li>
+          `;
+        })
+        .join('');
+    }
+
+    // ---------------------------------------------------------------
+    // 5. WIRE — nav, toast, and the send flow.
+    // ---------------------------------------------------------------
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('is-active'));
+        link.classList.add('is-active');
+      });
+    });
+
+    // --- Toast ---
+    let toastTimer;
+    function showToast(msg, isError = false) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.toggle('is-error', isError);
+      t.classList.add('is-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('is-visible'), 3200);
+    }
+
+    // --- Send modal ---
+    const sendModal   = $('send-modal');
+    const assetSelect = $('send-asset');
+    const amountInput = $('send-amount');
+    const addressInput = $('send-address');
+    const errorEl     = $('send-error');
+    const availableEl = $('send-available');
+
+    const holdingFor = symbol => state.holdings.find(h => h.symbol === symbol);
+
+    function updateAvailable() {
+      const h = holdingFor(assetSelect.value);
+      availableEl.textContent = h ? `${fmtAmount(h.amount)} ${h.symbol}` : '—';
+    }
+
+    function openSend() {
+      errorEl.textContent = '';
+      amountInput.value = '';
+      addressInput.value = '';
+
+      // Rebuild options so balances shown match current state.
+      assetSelect.innerHTML = state.holdings
+        .map(h => `<option value="${esc(h.symbol)}">${esc(h.symbol)} · ${fmtAmount(h.amount)} available</option>`)
+        .join('');
+      assetSelect.value = 'ETH';
+
+      updateAvailable();
+      sendModal.classList.add('is-open');
+      sendModal.setAttribute('aria-hidden', 'false');
+      amountInput.focus();
+    }
+
+    function closeSend() {
+      sendModal.classList.remove('is-open');
+      sendModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function submitSend(e) {
+      e.preventDefault();
+
+      const symbol  = assetSelect.value;
+      const holding = holdingFor(symbol);
+      const raw     = amountInput.value.trim();
+      const amount  = Number(raw);
+      const address = addressInput.value.trim();
+
+      errorEl.textContent = '';
+
+      if (!raw || !Number.isFinite(amount) || amount <= 0) {
+        errorEl.textContent = 'Enter an amount greater than 0.';
+        return;
+      }
+      if (!holding || amount > holding.amount) {
+        errorEl.textContent = `Insufficient ${symbol}. Available: ${holding ? fmtAmount(holding.amount) : '0'} ${symbol}.`;
+        return;
+      }
+      if (!/^0x[0-9a-fA-F]{6,}$/.test(address)) {
+        errorEl.textContent = 'Enter a valid address (0x followed by hex characters).';
+        return;
+      }
+
+      const price = state.prices[symbol]?.usd ?? 0;
+
+      // Deduct, then record the transfer.
+      holding.amount = Math.max(0, holding.amount - amount);
+
+      state.transactions.push({
+        id: 't' + Date.now(),
+        type: 'sent',
+        symbol,
+        amount,
+        usdAtTime: amount * price,
+        date: new Date().toISOString(),
+        counterparty: address.length > 12
+          ? address.slice(0, 6) + '…' + address.slice(-4)
+          : address,
+        status: 'pending',
+      });
+
+      closeSend();
+      render();
+      showToast(`Sent ${fmtAmount(amount)} ${symbol} — pending confirmation`);
+    }
+
+    $('send-btn').addEventListener('click', openSend);
+    $('send-close').addEventListener('click', closeSend);
+    $('send-cancel').addEventListener('click', closeSend);
+    $('send-form').addEventListener('submit', submitSend);
+    assetSelect.addEventListener('change', updateAvailable);
+
+    $('send-max').addEventListener('click', () => {
+      const h = holdingFor(assetSelect.value);
+      amountInput.value = h.amount;
+      errorEl.textContent = '';
+    });
+
+    // Backdrop click + Escape close.
+    sendModal.addEventListener('click', e => {
+      if (e.target === sendModal) closeSend();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && sendModal.classList.contains('is-open')) closeSend();
+    });
+
+    render();
+  </script>
+
+</body>
+</html>
