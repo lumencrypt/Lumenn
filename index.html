@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blue Oak Bank</title>
+<style>
+  :root{
+    --navy:#0b1f3a;
+    --navy-2:#13315c;
+    --teal:#0f766e;
+    --gold:#c9a227;
+    --bg:#f5f8fc;
+    --surface:#ffffff;
+    --text:#0f172a;
+    --muted:#5b6b82;
+    --border:#dbe3ee;
+    --danger:#b91c1c;
+    --success:#15803d;
+    --radius:16px;
+    --shadow:0 12px 30px rgba(11,31,58,.10);
+    --max:1140px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  h1,h2,h3,h4{line-height:1.2;margin:0 0 .55em;letter-spacing:-.02em}
+  h1{font-size:clamp(2rem,5vw,3.3rem)}
+  h2{font-size:clamp(1.5rem,3vw,2.1rem)}
+  p{margin:0 0 1rem}
+  a{color:inherit;text-decoration:none}
+  .container{width:min(var(--max),100% - 2.5rem);margin-inline:auto}
+  .muted{color:var(--muted)}
+  .center{text-align:center}
+
+  /* Header */
+  .header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .header-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    height:70px;gap:1rem;
+  }
+  .logo{display:flex;align-items:center;gap:.65rem;font-weight:800;font-size:1.1rem}
+  .logo-mark{
+    width:36px;height:36px;border-radius:10px;
+    display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--navy),var(--teal));
+    color:#fff;font-size:1rem;
+  }
+  .nav{display:flex;align-items:center;gap:1.4rem}
+  .nav a{font-weight:600;color:var(--muted);font-size:.95rem}
+  .nav a:hover{color:var(--navy)}
+  .header-actions{display:flex;align-items:center;gap:.6rem}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+    padding:.75rem 1.25rem;border-radius:999px;border:1px solid transparent;
+    font:inherit;font-weight:700;cursor:pointer;transition:.2s ease;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;box-shadow:0 8px 20px rgba(11,31,58,.25)}
+  .btn-gold{background:var(--gold);color:var(--navy)}
+  .btn-ghost{background:transparent;border-color:var(--border);color:var(--text)}
+  .btn-ghost:hover{background:#eef3f9}
+  .icon-btn{
+    width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+    background:transparent;border:1px solid var(--border);color:var(--text);
+    cursor:pointer;font-size:1rem;
+  }
+  .menu-btn{display:none}
+
+  @media(max-width:850px){
+    .menu-btn{display:grid}
+    .nav{
+      position:fixed;left:0;right:0;top:70px;
+      flex-direction:column;align-items:stretch;gap:0;
+      background:var(--surface);border-bottom:1px solid var(--border);
+      padding:.5rem 1.25rem 1.25rem;transform:translateY(-140%);
+      transition:.3s ease;z-index:40;box-shadow:var(--shadow);
+    }
+    .nav.open{transform:translateY(0)}
+    .nav a{padding:.85rem .25rem;border-bottom:1px solid var(--border)}
+  }
+
+  /* Hero */
+  .hero{padding:clamp(3rem,7vw,5.5rem) 0;background:
+    radial-gradient(circle at 85% 15%,rgba(15,118,110,.14),transparent 40%),
+    radial-gradient(circle at 10% 80%,rgba(201,162,39,.13),transparent 40%);
+  }
+  .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:3rem;align-items:center}
+  .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.78rem;font-weight:800;color:var(--teal);margin-bottom:.45rem}
+  .badge{display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .85rem;border-radius:999px;background:#e9f5f3;color:var(--teal);font-size:.82rem;font-weight:800;margin-bottom:1rem}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.6rem}
+  .hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow)}
+  .rate-row{display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;margin-top:.9rem}
+  .bar{height:9px;border-radius:99px;background:#e5ecf5;overflow:hidden;margin-top:.35rem}
+  .bar>span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--teal),var(--gold))}
+  @media(max-width:850px){.hero-grid{grid-template-columns:1fr}}
+
+  /* Sections */
+  section{padding:clamp(3rem,7vw,5rem) 0}
+  .section-head{max-width:640px;margin:0 auto 2.5rem}
+  .cards{display:grid;gap:1.2rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.6rem;transition:.25s ease}
+  .card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:rgba(15,118,110,.35)}
+  .card-icon{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:1.25rem;background:#e9f5f3;margin-bottom:1rem}
+  .card p{margin:0;color:var(--muted);font-size:.94rem}
+  .rate-pill{display:inline-block;margin-top:.8rem;padding:.3rem .65rem;border-radius:999px;background:#fff7df;color:#7a5b00;font-size:.78rem;font-weight:800}
+
+  /* Stats */
+  .stats{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));background:var(--navy);color:#fff;border-radius:var(--radius);padding:2rem;text-align:center}
+  .stat-num{font-size:clamp(1.5rem,4vw,2.3rem);font-weight:800;color:var(--gold)}
+  .stat-label{font-size:.85rem;color:#c7d4e6}
+
+  /* Contact */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+  @media(max-width:850px){.contact-grid{grid-template-columns:1fr}}
+  form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.6rem;box-shadow:var(--shadow)}
+  .field{margin-bottom:1rem}
+  label{display:block;font-size:.88rem;font-weight:700;margin-bottom:.35rem}
+  input,textarea{width:100%;padding:.75rem .9rem;font:inherit;color:var(--text);background:#fff;border:1px solid var(--border);border-radius:10px}
+  input:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,118,110,.18)}
+  textarea{resize:vertical;min-height:120px}
+  .error{display:none;color:var(--danger);font-size:.8rem;margin-top:.3rem}
+  .field.invalid input,.field.invalid textarea{border-color:var(--danger)}
+  .field.invalid .error{display:block}
+  .form-note{display:none;margin-top:1rem;padding:.75rem 1rem;border-radius:10px;font-size:.9rem;font-weight:700;background:#e9f8ef;color:var(--success);border:1px solid #b8e6c8}
+  .form-note.show{display:block}
+  .form-note.error{background:#fee2e2;border-color:#fecaca;color:#b91c1c}
+
+  /* Dashboard */
+  #dashboard{display:none}
+  #dashboard.show{display:block}
+  
+  .greeting-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+  .greeting-bar h2 { margin: 0; font-size: 1.6rem; color: var(--navy); }
+  .greeting-bar p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  
+  .alert-banner { background: #fee2e2; border: 1px solid #fecaca; color: #b91c1c; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem; }
+
+  .dash-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:1.5rem}
+  @media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
+  
+  .balance-card{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow)}
+  .balance-label{font-size:.85rem;color:#c7d4e6;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+  .balance-amount{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;color:var(--gold);margin:.3rem 0}
+  .dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow)}
+  .dash-card h3{font-size:1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; margin-bottom: 1rem;}
+  
+  .quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+  .quick-actions button{padding:.8rem;border-radius:10px;border:1px solid var(--border);background:#f8fafc;font:inherit;font-weight:700;cursor:pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.2s;}
+  .quick-actions button:hover{background:#eef3f9; border-color: #cbd5e1;}
+  .quick-actions button span { font-size: 1.2rem; }
+  
+  /* Scrollable Table */
+  .txn-table-wrapper{max-height: 400px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;font-size:.9rem; background: #fff;}
+  th,td{text-align:left;padding:.75rem .5rem;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em; position: sticky; top: 0; background: #f5f8fc; z-index: 10;}
+  .amount-pos{color:var(--success);font-weight:700}
+  .amount-neg{color:var(--danger);font-weight:700}
+  
+  .txn-icon { display: inline-flex; width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; align-items: center; justify-content: center; margin-right: 10px; font-size: 1rem; vertical-align: middle;}
+  .txn-desc { display: flex; align-items: center; font-weight: 600;}
+
+  .login-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);max-width:620px;margin:0 auto}
+
+  /* Payees */
+  .payees-row { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 10px; }
+  .payee { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; min-width: 60px; }
+  .payee-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--teal); color: #fff; display: grid; place-items: center; font-weight: bold; font-size: 1.2rem; transition: 0.2s;}
+  .payee:hover .payee-avatar { transform: scale(1.05); }
+  .payee span { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-align: center;}
+
+  /* Statements List */
+  .statement-list{list-style: none; padding: 0; margin: 0;}
+  .statement-list li{display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem;}
+  .statement-list li:last-child{border-bottom: none;}
+  .statement-list button{background:none; border:none; color: var(--teal); font-weight: 700; cursor:pointer; font-size: inherit;}
+  .statement-list button:hover { text-decoration: underline; }
+
+  /* Upcoming Bills */
+  .bill-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.9rem;}
+  .bill-item .bill-name { font-weight: 600; color: var(--text);}
+  .bill-item .bill-date { font-size: 0.75rem; color: var(--muted);}
+  .bill-item .bill-amount { font-weight: 700; color: var(--navy);}
+
+  /* MODAL STYLES */
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(11, 31, 58, 0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-content {
+    background: #fff; width: 100%; max-width: 800px; border-radius: 12px; padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative;
+  }
+  .close-modal {
+    position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; width: 32px; height: 32px;
+    border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: grid; place-items: center; color: var(--text);
+  }
+  .close-modal:hover { background: #e2e8f0; }
+  
+  .stmt-header { border-bottom: 2px solid var(--navy); padding-bottom: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end; }
+  .stmt-title { font-size: 1.5rem; font-weight: 800; color: var(--navy); margin: 0; }
+  .stmt-meta { text-align: right; font-size: 0.85rem; color: var(--muted); }
+  .stmt-summary { display: flex; justify-content: space-between; background: var(--bg); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-weight: 600; }
+  .stmt-table th { background: #fff; border-bottom: 2px solid var(--border); }
+
+  /* Footer */
+  footer{border-top:1px solid var(--border);padding:2.2rem 0;color:var(--muted);font-size:.88rem}
+  .footer-inner{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between}
+  .footer-links{display:flex;gap:1.1rem}
+  .footer-links a:hover{color:var(--navy)}
+  :where(a,button,input,textarea):focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a class="logo" href="#home">
+      <span class="logo-mark">BO</span>
+      Blue Oak Bank
+    </a>
+
+    <nav class="nav" id="nav">
+      <a href="#accounts">Accounts</a>
+      <a href="#loans">Loans & Cards</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <a href="#login" id="navLoginLink">Login</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-primary" href="#login" id="headerLoginBtn" style="padding:.65rem 1rem;">Login</a>
+      <button class="btn btn-ghost" id="headerLogoutBtn" style="display:none; padding:.65rem 1rem;" onclick="document.getElementById('logoutBtn').click();">Log Out</button>
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="nav">☰</button>
+    </div>
+  </div>
+</header>
+
+<main id="home">
+
+  <!-- HERO (Marketing Section) -->
+  <section class="hero" id="heroSection">
+    <div class="container hero-grid">
+      <div>
+        <span class="badge">● Modern Online Banking</span>
+        <h1>Simple banking.<br>Clearer future.</h1>
+        <p class="muted" style="font-size:1.08rem;max-width:55ch;">
+          Experience seamless online banking with checking accounts, cards, loans,
+          and a secure dashboard.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#login">View dashboard →</a>
+          <a class="btn btn-ghost" href="#accounts">Explore accounts</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <h3>Savings rate</h3>
+        <p class="muted" style="font-size:.9rem;margin-bottom:.4rem;">Grow your money faster.</p>
+        <div style="font-size:2.2rem;font-weight:800;color:var(--teal);">4.25% <span style="font-size:1rem;color:var(--muted);">APY</span></div>
+        <div class="rate-row"><span>Emergency fund</span><span>82%</span></div>
+        <div class="bar"><span style="width:82%"></span></div>
+        <div class="rate-row"><span>Vacation fund</span><span>64%</span></div>
+        <div class="bar"><span style="width:64%"></span></div>
+        <div class="rate-row"><span>Home down payment</span><span>47%</span></div>
+        <div class="bar"><span style="width:47%"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACCOUNTS -->
+  <section id="accounts">
+    <div class="container">
+      <div class="section-head center">
+        <p class="eyebrow">Accounts</p>
+        <h2>Banking that fits everyday life</h2>
+        <p class="muted">Account options designed to help you grow.</p>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <div class="card-icon">💳</div>
+          <h3>Everyday Checking</h3>
+          <p>No monthly fees, instant card lock, and built-in budgeting tools.</p>
+          <span class="rate-pill">$0 monthly fee</span>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🏦</div>
+          <h3>High-Yield Savings</h3>
+          <p>Grow your emergency fund with a competitive 4.25% APY.</p>
+          <span class="rate-pill">4.25% APY</span>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">📈</div>
+          <h3>12-Month CD</h3>
+          <p>Lock in a great rate and watch your savings grow securely.</p>
+          <span class="rate-pill">4.75% APY</span>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🧑‍💼</div>
+          <h3>Student Checking</h3>
+          <p>A simple starter account to help students manage their money.</p>
+          <span class="rate-pill">Ages 16–24</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGIN / DASHBOARD SECTION -->
+  <section id="login" style="background:#eef3f9; min-height: 80vh;">
+    <div class="container">
+      
+      <!-- LOGIN PANEL -->
+      <div id="loginPanel">
+        <div class="section-head center">
+          <p class="eyebrow">Login</p>
+          <h2>Access your dashboard</h2>
+        </div>
+        <div class="login-panel">
+          <h3>Sign in</h3>
+          <form id="loginForm" novalidate>
+            <div class="field">
+              <label for="loginEmail">Email</label>
+              <input id="loginEmail" name="loginEmail" type="email" placeholder="Enter your email" autocomplete="off" required>
+              <span class="error">Please enter a valid email.</span>
+            </div>
+            <div class="field">
+              <label for="loginPassword">Password</label>
+              <input id="loginPassword" name="loginPassword" type="password" placeholder="••••••••" autocomplete="off" required>
+              <span class="error">Please enter your password.</span>
+            </div>
+            <button class="btn btn-gold" type="submit" style="width:100%; padding: 1rem; font-size: 1rem;">Log in securely</button>
+            <p class="form-note error" id="loginNote" role="status">❌ Incorrect email or password.</p>
+          </form>
+        </div>
+      </div>
+
+      <!-- DASHBOARD (Hidden until login) -->
+      <div id="dashboard">
+        
+        <!-- Greeting -->
+        <div class="greeting-bar">
+          <div>
+            <h2>Welcome back, Alexsandra</h2>
+            <p>Here is what's happening with your account today.</p>
+          </div>
+          <div style="text-align: right; color: var(--muted); font-size: 0.9rem;">
+            <strong>Last Login:</strong> Today, 10:24 AM
+          </div>
+        </div>
+
+        <!-- Alert Banner -->
+        <div class="alert-banner">
+          <span>⚠️</span>
+          <div>
+            <strong>Action Required:</strong> Your account is currently marked as dormant. Please contact support to reactivate outgoing transfers.
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          
+          <!-- LEFT COLUMN -->
+          <div>
+            <div class="balance-card">
+              <div class="balance-label">Total available balance</div>
+              <div class="balance-amount">$3,200,000.00</div>
+              <div style="color:#c7d4e6;font-size:.9rem;">Primary Checking •••• 4821</div>
+              <div style="display:flex;gap:.6rem;margin-top:1.5rem;flex-wrap:wrap;">
+                <button class="btn btn-gold" type="button" onclick="alert('Account is dormant. Please contact support to reactivate.')">Transfer</button>
+                <button class="btn btn-ghost" type="button" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25);">Pay bills</button>
+                <button class="btn btn-ghost" type="button" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25);">Deposit</button>
+              </div>
+            </div>
+
+            <!-- Spending Breakdown -->
+            <div class="dash-card" style="margin-top:1.5rem;">
+              <h3>Spending Breakdown (October)</h3>
+              <div class="rate-row"><span>Housing & Utilities</span><span>$1,450.00</span></div>
+              <div class="bar"><span style="width:45%"></span></div>
+              <div class="rate-row"><span>Food & Dining</span><span>$620.00</span></div>
+              <div class="bar"><span style="width:20%"></span></div>
+              <div class="rate-row"><span>Shopping & Entertainment</span><span>$480.00</span></div>
+              <div class="bar"><span style="width:15%"></span></div>
+              <div class="rate-row"><span>Transportation</span><span>$210.00</span></div>
+              <div class="bar"><span style="width:8%"></span></div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="dash-card" style="margin-top:1.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; margin-bottom: 1rem;">
+                <h3 style="border:none; margin:0; padding:0;">Recent Transactions</h3>
+                <a href="#" style="color:var(--teal); font-weight:700; font-size:0.85rem;">View All</a>
+              </div>
+              <div class="txn-table-wrapper">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td style="width: 40px;"><div class="txn-icon">🍿</div></td>
+                      <td>
+                        <div class="txn-desc">Netflix Subscription</div>
+                        <div style="font-size:0.75rem; color:var(--muted);">Oct 24 • Entertainment</div>
+                      </td>
+                      <td style="text-align:right;" class="amount-neg">−$15.99</td>
+                    </tr>
+                    <tr>
+                      <td><div class="txn-icon">🚗</div></td>
+                      <td>
+                        <div class="txn-desc">Uber Ride</div>
+                        <div style="font-size:0.75rem; color:var(--muted);">Oct 23 • Transport</div>
+                      </td>
+                      <td style="text-align:right;" class="amount-neg">−$24.50</td>
+                    </tr>
+                    <tr>
+                      <td><div class="txn-icon">☕</div></td>
+                      <td>
+                        <div class="txn-desc">Starbucks Coffee</div>
+                        <div style="font-size:0.75rem; color:var(--muted);">Oct 23 • Food</div>
+                      </td>
+                      <td style="text-align:right;" class="amount-neg">−$8.45</td>
+                    </tr>
+                    <tr>
+                      <td><div class="txn-icon">💼</div></td>
+                      <td>
+                        <div class="txn-desc">Payroll Deposit</div>
+                        <div style="font-size:0.75rem; color:var(--muted);">Oct 22 • Income</div>
+                      </td>
+                      <td style="text-align:right;" class="amount-pos">+$8,500.00</td>
+                    </tr>
+                    <tr>
+                      <td><div class="txn-icon">🛒</div></td>
+                      <td>
+                        <div class="txn-desc">Whole Foods Market</div>
+                        <div style="font-size:0.75rem; color:var(--muted);">Oct 21 • Groceries</div>
+                      </td>
+                      <td style="text-align:right;" class="amount-neg">−$142.38</td>
+                    </tr>
+                    <tr>
+                      <td><div class="txn-icon">💡</div></td>
+                      <td>
+                        <div class="txn-desc">Electric Bill</div>
+                        <div style="font-size:0.75rem; color:var(--muted);">Oct 20 • Utilities</div>
+                      </td>
+                      <td style="text-align:right;" class="amount-neg">−$96.12</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <div>
+            
+            <!-- Payees -->
+            <div class="dash-card">
+              <h3>Send Again</h3>
+              <div class="payees-row">
+                <div class="payee" onclick="alert('Account is dormant. Please contact support to reactivate.')">
+                  <div class="payee-avatar" style="background:#0f766e;">SM</div>
+                  <span>Sarah M.</span>
+                </div>
+                <div class="payee" onclick="alert('Account is dormant. Please contact support to reactivate.')">
+                  <div class="payee-avatar" style="background:#c9a227; color:#0b1f3a;">JD</div>
+                  <span>John D.</span>
+                </div>
+                <div class="payee" onclick="alert('Account is dormant. Please contact support to reactivate.')">
+                  <div class="payee-avatar" style="background:#13315c;">EW</div>
+                  <span>Emma W.</span>
+                </div>
+                <div class="payee" onclick="alert('Account is dormant. Please contact support to reactivate.')">
+                  <div class="payee-avatar" style="background:#e2e8f0; color:#0b1f3a;">+</div>
+                  <span>New</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dash-card" style="margin-top:1.5rem;">
+              <h3>Quick Actions</h3>
+              <div class="quick-actions">
+                <button type="button" onclick="alert('Account is dormant. Please contact support to reactivate.')"><span>💸</span>Send money</button>
+                <button type="button"><span>📄</span>Pay bills</button>
+                <button type="button"><span>💳</span>View cards</button>
+                <button type="button" onclick="document.getElementById('statementSection').scrollIntoView({behavior: 'smooth'});"><span>📊</span>Statements</button>
+              </div>
+            </div>
+
+            <!-- Upcoming Bills -->
+            <div class="dash-card" style="margin-top:1.5rem;">
+              <h3>Upcoming Bills</h3>
+              <div class="bill-item">
+                <div>
+                  <div class="bill-name">City Power & Light</div>
+                  <div class="bill-date">Due Oct 28</div>
+                </div>
+                <div class="bill-amount">$110.00</div>
+              </div>
+              <div class="bill-item">
+                <div>
+                  <div class="bill-name">Comcast Internet</div>
+                  <div class="bill-date">Due Nov 02</div>
+                </div>
+                <div class="bill-amount">$85.00</div>
+              </div>
+              <div class="bill-item">
+                <div>
+                  <div class="bill-name">State Farm Auto</div>
+                  <div class="bill-date">Due Nov 05</div>
+                </div>
+                <div class="bill-amount">$145.50</div>
+              </div>
+            </div>
+
+            <!-- Statements -->
+            <div class="dash-card" id="statementSection" style="margin-top:1.5rem;">
+              <h3>Statements</h3>
+              <ul class="statement-list">
+                <li><span>October 2026</span> <button onclick="openStatement()">View</button></li>
+                <li><span>September 2026</span> <button onclick="alert('No transactions this month.')">View</button></li>
+                <li><span>August 2026</span> <button onclick="alert('No transactions this month.')">View</button></li>
+              </ul>
+            </div>
+
+          </div>
+          
+        </div>
+
+        <div class="center" style="margin-top:2.5rem;">
+          <button class="btn btn-ghost" id="logoutBtn" type="button">Log out of dashboard</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>© <span id="year"></span> Blue Oak Bank. All rights reserved.</span>
+    <div class="footer-links">
+      <a href="#accounts">Accounts</a>
+      <a href="#loans">Loans & Cards</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- STATEMENT MODAL (POPUP) -->
+<div class="modal-overlay" id="statementModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeStatement()">✕</button>
+    
+    <div class="stmt-header">
+      <div>
+        <h2 class="stmt-title">Blue Oak Bank</h2>
+        <div style="color:var(--muted); font-size:0.9rem;">Monthly Statement</div>
+      </div>
+      <div class="stmt-meta">
+        <strong>Statement Period:</strong><br>
+        Oct 1, 2026 – Oct 31, 2026<br>
+        <strong>Account:</strong> Primary Checking
+      </div>
+    </div>
+
+    <div class="stmt-summary">
+      <div>Opening Balance: <br><span style="color:var(--navy); font-size:1.1rem;">$3,190,426.63</span></div>
+      <div style="text-align:right;">Closing Balance: <br><span style="color:var(--success); font-size:1.1rem;">$3,200,000.00</span></div>
+    </div>
+
+    <div class="txn-table-wrapper" style="max-height: 400px;">
+      <table class="stmt-table">
+        <thead>
+          <tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Oct 14</td><td>Gym Membership</td><td class="amount-neg">−$35.00</td><td>$3,190,391.63</td></tr>
+          <tr><td>Oct 15</td><td>Apple iCloud Storage</td><td class="amount-neg">−$2.99</td><td>$3,190,388.64</td></tr>
+          <tr><td>Oct 16</td><td>Shell Gas Station</td><td class="amount-neg">−$45.00</td><td>$3,190,343.64</td></tr>
+          <tr><td>Oct 17</td><td>Amazon Purchase</td><td class="amount-neg">−$56.20</td><td>$3,190,287.44</td></tr>
+          <tr><td>Oct 18</td><td>Transfer In - Sarah M.</td><td class="amount-pos">+$2,000.00</td><td>$3,192,287.44</td></tr>
+          <tr><td>Oct 19</td><td>Transfer to Savings</td><td class="amount-neg">−$500.00</td><td>$3,191,787.44</td></tr>
+          <tr><td>Oct 20</td><td>Electric Bill</td><td class="amount-neg">−$96.12</td><td>$3,191,691.32</td></tr>
+          <tr><td>Oct 21</td><td>Whole Foods Market</td><td class="amount-neg">−$142.38</td><td>$3,191,548.94</td></tr>
+          <tr><td>Oct 22</td><td>Payroll Deposit</td><td class="amount-pos">+$8,500.00</td><td>$3,200,048.94</td></tr>
+          <tr><td>Oct 23</td><td>Starbucks Coffee</td><td class="amount-neg">−$8.45</td><td>$3,200,040.49</td></tr>
+          <tr><td>Oct 23</td><td>Uber Ride</td><td class="amount-neg">−$24.50</td><td>$3,200,015.99</td></tr>
+          <tr><td>Oct 24</td><td>Netflix Subscription</td><td class="amount-neg">−$15.99</td><td>$3,200,000.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div style="margin-top: 1.5rem; text-align: center;">
+      <button class="btn btn-primary" onclick="closeStatement()">Close Statement</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // LOGIN CREDENTIALS
+  const DEMO_EMAIL = "Alexsandra6991@gmail.com";
+  const DEMO_PASSWORD = "Vicsan4204";
+
+  const menuBtn = document.getElementById("menuBtn");
+  const nav = document.getElementById("nav");
+
+  menuBtn.addEventListener("click", function () {
+    const open = nav.classList.toggle("open");
+    menuBtn.textContent = open ? "✕" : "☰";
+    menuBtn.setAttribute("aria-expanded", String(open));
+  });
+
+  nav.querySelectorAll("a").forEach(function (link) {
+    link.addEventListener("click", function () {
+      nav.classList.remove("open");
+      menuBtn.textContent = "☰";
+      menuBtn.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  /* ---------- Login / Logout Logic ---------- */
+  const loginPanel = document.getElementById("loginPanel");
+  const loginForm = document.getElementById("loginForm");
+  const loginNote = document.getElementById("loginNote");
+  const dashboard = document.getElementById("dashboard");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const heroSection = document.getElementById("heroSection");
+  
+  const headerLoginBtn = document.getElementById("headerLoginBtn");
+  const headerLogoutBtn = document.getElementById("headerLogoutBtn");
+  const navLoginLink = document.getElementById("navLoginLink");
+
+  loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const emailOk = email === DEMO_EMAIL;
+    const passwordOk = password === DEMO_PASSWORD;
+
+    if (emailOk && passwordOk) {
+      loginNote.classList.remove("show");
+      loginPanel.style.display = "none";
+      dashboard.classList.add("show");
+      heroSection.style.display = "none"; // Hide marketing hero for realism
+      dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("loginPassword").value = "";
+      
+      // Update Header UI
+      headerLoginBtn.style.display = "none";
+      navLoginLink.style.display = "none";
+      headerLogoutBtn.style.display = "inline-flex";
+      
+    } else {
+      loginNote.classList.add("show");
+      dashboard.classList.remove("show");
+      document.getElementById("loginPassword").value = "";
+      document.getElementById("loginPassword").focus();
+    }
+  });
+
+  logoutBtn.addEventListener("click", function () {
+    dashboard.classList.remove("show");
+    loginPanel.style.display = "block";
+    heroSection.style.display = "block"; // Bring back marketing hero
+    document.getElementById("loginEmail").value = "";
+    document.getElementById("loginPassword").value = "";
+    loginNote.classList.remove("show");
+    loginPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+    
+    // Update Header UI
+    headerLoginBtn.style.display = "inline-flex";
+    navLoginLink.style.display = "inline-flex";
+    headerLogoutBtn.style.display = "none";
+    
+    closeStatement();
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+})();
+
+/* ---------- Statement Modal Functions ---------- */
+function openStatement() {
+  document.getElementById('statementModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeStatement() {
+  document.getElementById('statementModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+</script>
+
+</body>
+</html>
